@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>BUCCL × Kraken — Design Spec (Print)</title>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+  :root {
+    --c-ink: #101114;
+    --c-brand: #7132F5;
+    --c-brand-50: #F4EFFF;
+    --c-accent: #E55D3C;
+    --c-line: #DEDEE5;
+    --c-bg: #F7F7FA;
+    --c-text-2: #686B82;
+    --c-text-3: #9497A9;
+    --font-sans: 'Pretendard Variable', Pretendard, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--c-ink);
+    background: #fff;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+    font-size: 13px;
+  }
+  .page {
+    width: 794px; /* A4 width @ 96dpi */
+    min-height: 1123px;
+    margin: 24px auto;
+    padding: 56px 64px;
+    background: #fff;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    page-break-after: always;
+  }
+  @media print {
+    @page { size: A4; margin: 0; }
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; padding: 56px 64px; }
+  }
+  .eyebrow {
+    font-size: 10px; font-weight: 800; letter-spacing: 0.16em;
+    color: var(--c-brand); text-transform: uppercase;
+  }
+  h1 {
+    font-size: 38px; font-weight: 900; letter-spacing: -0.035em;
+    margin: 8px 0 16px; line-height: 1.1;
+  }
+  h2 {
+    font-size: 22px; font-weight: 800; letter-spacing: -0.025em;
+    margin: 32px 0 12px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--c-line);
+  }
+  h3 {
+    font-size: 14px; font-weight: 800; letter-spacing: -0.015em;
+    margin: 18px 0 8px;
+  }
+  p { margin: 0 0 10px; color: #2A2D3A; }
+  .lede { font-size: 15px; color: var(--c-text-2); }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px; margin: 8px 0 14px;
+  }
+  th, td {
+    text-align: left; padding: 8px 10px;
+    border-bottom: 1px solid var(--c-line);
+    vertical-align: top;
+  }
+  th { font-weight: 700; color: var(--c-text-2); background: var(--c-bg); }
+  td code, p code, li code {
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    font-size: 11.5px; background: var(--c-bg);
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .swatch {
+    border: 1px solid var(--c-line); border-radius: 10px; overflow: hidden;
+  }
+  .swatch-color {
+    height: 64px; display: flex; align-items: flex-end; justify-content: flex-end;
+    padding: 6px 8px; color: #fff;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.04em;
+  }
+  .swatch-meta { padding: 8px 10px; font-size: 11px; }
+  .swatch-meta b { display: block; font-size: 12.5px; }
+  .swatch-meta code { font-size: 10.5px; color: var(--c-text-3); background: transparent; padding: 0; }
+  .pill {
+    display: inline-block; padding: 2px 9px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 700;
+    background: var(--c-brand-50); color: var(--c-brand); margin-right: 4px;
+  }
+  .footer {
+    margin-top: 48px; padding-top: 16px;
+    border-top: 1px solid var(--c-line);
+    font-size: 10.5px; color: var(--c-text-3); display: flex; justify-content: space-between;
+  }
+  ul, ol { padding-left: 22px; margin: 6px 0 12px; }
+  li { margin: 3px 0; }
+  .note {
+    background: var(--c-brand-50);
+    border-left: 3px solid var(--c-brand);
+    padding: 10px 14px; border-radius: 8px;
+    font-size: 12px; margin: 12px 0;
+  }
+  .kbd {
+    font-family: ui-monospace, monospace; font-size: 10.5px;
+    padding: 1px 5px; border: 1px solid var(--c-line);
+    border-radius: 4px; background: var(--c-bg);
+  }
+</style>
+</head>
+<body>
+
+<!-- =============== PAGE 1: COVER =============== -->
+<section class="page">
+  <div class="eyebrow">BUCCL × KRAKEN · REDESIGN HANDOFF</div>
+  <h1>버킷리스트앱<br/>디자인 명세서</h1>
+  <p class="lede">다이빙·스포츠 통합 플랫폼의 전반적 리디자인 — 컴포넌트 토큰, 메인 화면, 첫 사용자 튜토리얼까지.</p>
+
+  <div style="margin-top: 40px; padding: 24px; border: 1px solid var(--c-line); border-radius: 14px; background: var(--c-bg);">
+    <div class="eyebrow" style="color: var(--c-text-2);">DELIVERABLES</div>
+    <h3 style="margin-top: 6px;">함께 제공되는 자료</h3>
+    <ul style="font-size: 13px;">
+      <li><b>Standalone HTML</b> — 시연·리뷰용 인터랙티브 캔버스 (브라우저에서 바로 열림)</li>
+      <li><b>Print Spec PDF</b> — 본 문서. 회의·인쇄 자료</li>
+      <li><b>Source Bundle</b> — <code>source/</code> 폴더의 React JSX + tokens.css</li>
+    </ul>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <h3>핵심 키워드</h3>
+    <span class="pill">Kraken Purple</span>
+    <span class="pill">Deep Sea Onboarding</span>
+    <span class="pill">Instagram-style Dive Points</span>
+    <span class="pill">Pretendard Variable</span>
+    <span class="pill">5×2 QuickMenu</span>
+  </div>
+
+  <div class="note">
+    <b>📌 이 문서는 디자인 참조입니다.</b><br/>
+    번들된 HTML/JSX 는 그대로 운영에 올리는 게 아니라, 기존 <code>FE/</code> 코드베이스 (React + Zustand + SCSS) 안에서 재구현하는 기준 문서로 사용해 주세요. <code>tokens.css</code> 만은 그대로 복붙해도 무방합니다.
+  </div>
+
+  <div class="footer">
+    <span>BUCCL Design Team</span>
+    <span>2026-05-26</span>
+  </div>
+</section>
+
+<!-- =============== PAGE 2: TOKENS — COLOR =============== -->
+<section class="page">
+  <div class="eyebrow">FOUNDATIONS · 01</div>
+  <h1>Color</h1>
+  <p class="lede">Kraken 보라 1톤 시그니처 + 코랄 액센트. 그 외는 모두 중립.</p>
+
+  <h2>Brand</h2>
+  <div class="grid-4">
+    <div class="swatch"><div class="swatch-color" style="background:#7132F5">BRAND</div>
+      <div class="swatch-meta"><b>--c-brand</b><code>#7132F5</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#5741D8">700</div>
+      <div class="swatch-meta"><b>--c-brand-700</b><code>#5741D8</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#E7DEFE;color:#5741D8">100</div>
+      <div class="swatch-meta"><b>--c-brand-100</b><code>#E7DEFE</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#F4EFFF;color:#5741D8">50</div>
+      <div class="swatch-meta"><b>--c-brand-50</b><code>#F4EFFF</code></div></div>
+  </div>
+
+  <h2>Accent (할인·HOT)</h2>
+  <div class="grid-4">
+    <div class="swatch"><div class="swatch-color" style="background:#E55D3C">ACCENT</div>
+      <div class="swatch-meta"><b>--c-accent</b><code>#E55D3C</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C4421F">700</div>
+      <div class="swatch-meta"><b>--c-accent-700</b><code>#C4421F</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FBE4DD;color:#C4421F">100</div>
+      <div class="swatch-meta"><b>--c-accent-100</b><code>#FBE4DD</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FDF2EE;color:#C4421F">50</div>
+      <div class="swatch-meta"><b>--c-accent-50</b><code>#FDF2EE</code></div></div>
+  </div>
+
+  <h2>Text & Neutrals</h2>
+  <div class="grid-4">
+    <div class="swatch"><div class="swatch-color" style="background:#101114">INK</div>
+      <div class="swatch-meta"><b>--c-text-1 / ink</b><code>#101114</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#686B82">TEXT-2</div>
+      <div class="swatch-meta"><b>--c-text-2</b><code>#686B82</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#9497A9">TEXT-3</div>
+      <div class="swatch-meta"><b>--c-text-3</b><code>#9497A9</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#B6B8C6">TEXT-4</div>
+      <div class="swatch-meta"><b>--c-text-4</b><code>#B6B8C6</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#F7F7FA;color:#101114;border-top:1px solid #DEDEE5">BG</div>
+      <div class="swatch-meta"><b>--c-bg</b><code>#F7F7FA</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#DEDEE5;color:#101114">LINE</div>
+      <div class="swatch-meta"><b>--c-line</b><code>#DEDEE5</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C9CAD3;color:#101114">LINE-S</div>
+      <div class="swatch-meta"><b>--c-line-strong</b><code>#C9CAD3</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#FFFFFF;color:#101114;border-top:1px solid #DEDEE5">SURFACE</div>
+      <div class="swatch-meta"><b>--c-surface</b><code>#FFFFFF</code></div></div>
+  </div>
+
+  <h2>Semantic</h2>
+  <div class="grid-4">
+    <div class="swatch"><div class="swatch-color" style="background:#149E61">SUCCESS</div>
+      <div class="swatch-meta"><b>--c-success</b><code>#149E61</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C58A12">WARNING</div>
+      <div class="swatch-meta"><b>--c-warning</b><code>#C58A12</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#A82121">DANGER</div>
+      <div class="swatch-meta"><b>--c-danger</b><code>#A82121</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1C7CD9">INFO</div>
+      <div class="swatch-meta"><b>--c-info</b><code>#1C7CD9</code></div></div>
+  </div>
+
+  <h2>Tutorial — Deep Sea Palette</h2>
+  <p>온보딩 화면 전용. 일반 화면에선 사용 X.</p>
+  <div class="grid-4">
+    <div class="swatch"><div class="swatch-color" style="background:#0F2032">BG TOP</div>
+      <div class="swatch-meta"><b>Tutorial BG (top)</b><code>#0F2032</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#050A12">BG BOTTOM</div>
+      <div class="swatch-meta"><b>Tutorial BG (bottom)</b><code>#050A12</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#101820">TOOLTIP</div>
+      <div class="swatch-meta"><b>Tooltip card</b><code>#101820</code></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7BC7DA;color:#0A1620">CYAN</div>
+      <div class="swatch-meta"><b>Cyan accent</b><code>#7BC7DA</code></div></div>
+  </div>
+
+  <div class="footer"><span>BUCCL · Design Spec</span><span>p.2 · Color</span></div>
+</section>
+
+<!-- =============== PAGE 3: TOKENS — TYPE / SPACING =============== -->
+<section class="page">
+  <div class="eyebrow">FOUNDATIONS · 02-03</div>
+  <h1>Type, Spacing &amp; Radius</h1>
+
+  <h2>Typography — Pretendard Variable</h2>
+  <table>
+    <tr><th>토큰</th><th>크기</th><th>용도</th></tr>
+    <tr><td><code>--t-display-1</code></td><td>32px / -0.03em</td><td>온보딩 헤드라인</td></tr>
+    <tr><td><code>--t-display-2</code></td><td>28px</td><td>큰 페이지 타이틀</td></tr>
+    <tr><td><code>--t-title-1</code></td><td>22px / -0.02em</td><td>상세 페이지 타이틀</td></tr>
+    <tr><td><code>--t-title-2</code></td><td>19px</td><td>모달/카드 헤드</td></tr>
+    <tr><td><code>--t-title-3</code></td><td>17px</td><td>섹션 헤드</td></tr>
+    <tr><td><code>--t-body-1</code></td><td>15px</td><td>본문</td></tr>
+    <tr><td><code>--t-body-2</code></td><td>14px</td><td>리스트/카드 본문</td></tr>
+    <tr><td><code>--t-caption-1</code></td><td>13px</td><td>설명/메타</td></tr>
+    <tr><td><code>--t-caption-2</code></td><td>12px</td><td>마이크로 카피</td></tr>
+    <tr><td><code>--t-micro</code></td><td>11px</td><td>탭 라벨 / 배지</td></tr>
+  </table>
+
+  <div style="margin-top: 16px;">
+    <div style="font-size: 32px; font-weight: 900; letter-spacing: -0.03em;">수면 아래의 세계로</div>
+    <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-top: 8px;">강습 예약 / 투어 캘린더</div>
+    <div style="font-size: 17px; font-weight: 700; margin-top: 8px;">이번 주 인기 다이브 포인트</div>
+    <div style="font-size: 15px; margin-top: 8px;">오픈워터 자격증 주말반에서 만나요.</div>
+    <div style="font-size: 13px; color: var(--c-text-3); margin-top: 6px;">예약 확정 · 강남 다이브샵 · 매주 토·일</div>
+  </div>
+
+  <h2>Spacing scale</h2>
+  <table>
+    <tr><th>토큰</th><th>값</th><th>주 용도</th></tr>
+    <tr><td><code>--s-1</code></td><td>4px</td><td>최소 hairline gap</td></tr>
+    <tr><td><code>--s-2</code></td><td>8px</td><td>아이콘-라벨, 칩 그룹</td></tr>
+    <tr><td><code>--s-3</code></td><td>12px</td><td>리스트 행 간격</td></tr>
+    <tr><td><code>--s-4</code></td><td>16px</td><td><b>표준 좌우 패딩</b> (홈/커뮤니티 등 일관)</td></tr>
+    <tr><td><code>--s-5</code></td><td>20px</td><td>상세 페이지 좌우 패딩</td></tr>
+    <tr><td><code>--s-6</code></td><td>24px</td><td>섹션 사이</td></tr>
+    <tr><td><code>--s-7</code></td><td>32px</td><td>큰 그룹 사이</td></tr>
+    <tr><td><code>--s-8</code></td><td>40px</td><td>온보딩 블록 사이</td></tr>
+  </table>
+
+  <h2>Radius</h2>
+  <table>
+    <tr><th>토큰</th><th>값</th><th>주 용도</th></tr>
+    <tr><td><code>--r-md</code></td><td>8</td><td>인풋, 작은 칩</td></tr>
+    <tr><td><code>--r-xl</code></td><td>12</td><td><b>버튼 (캡)</b></td></tr>
+    <tr><td><code>--r-2xl</code></td><td>16</td><td>카드</td></tr>
+    <tr><td><code>--r-pill</code></td><td>9999</td><td>칩, 배지</td></tr>
+  </table>
+
+  <h2>Shadow</h2>
+  <table>
+    <tr><th>토큰</th><th>값</th><th>용도</th></tr>
+    <tr><td><code>--sh-xs / sm</code></td><td>0 1px 4px / 4%</td><td>리스트 카드</td></tr>
+    <tr><td><code>--sh-md</code></td><td>0 4px 24px / 6%</td><td>부각 카드, 헤더 sticky</td></tr>
+    <tr><td><code>--sh-lg</code></td><td>0 8px 32px / 보라 10%</td><td>호버 CTA</td></tr>
+    <tr><td><code>--sh-focus</code></td><td>0 0 0 4px 보라 16%</td><td>포커스 링</td></tr>
+  </table>
+
+  <div class="footer"><span>BUCCL · Design Spec</span><span>p.3 · Type & Spacing</span></div>
+</section>
+
+<!-- =============== PAGE 4: COMPONENTS =============== -->
+<section class="page">
+  <div class="eyebrow">COMPONENTS</div>
+  <h1>핵심 컴포넌트</h1>
+
+  <h2>Button</h2>
+  <table>
+    <tr><th>variant</th><th>스타일</th><th>주 용도</th></tr>
+    <tr><td><code>primary</code></td><td>ink fill (#101114) + 흰 텍스트</td><td>주요 CTA</td></tr>
+    <tr><td><code>soft</code></td><td>brand-50 (#F4EFFF) + brand 텍스트</td><td>보조 액션</td></tr>
+    <tr><td><code>ghost</code></td><td>투명 + 1px line 보더</td><td>취소, 부가</td></tr>
+    <tr><td><code>text</code></td><td>배경 X, 보라 텍스트</td><td>인라인 링크</td></tr>
+  </table>
+  <table>
+    <tr><th>size</th><th>높이</th><th>폰트</th></tr>
+    <tr><td><code>sm</code></td><td>36px</td><td>13px / 700</td></tr>
+    <tr><td><code>md</code></td><td>44px</td><td>14px / 700</td></tr>
+    <tr><td><code>lg</code></td><td>52px</td><td>15px / 800</td></tr>
+  </table>
+  <p style="font-size:11.5px;color:var(--c-text-3)">props: <code>icon</code>, <code>iconRight</code>, <code>full</code>, <code>onClick</code></p>
+
+  <h2>Badge / Tag</h2>
+  <p>tone 6종 + size 2종. <code>solid</code> 옵션 시 fill 컬러 채움. icon prop 으로 leading 아이콘.</p>
+  <table>
+    <tr><th>tone</th><th>fg</th><th>bg</th></tr>
+    <tr><td>neutral</td><td>text-2</td><td>surface-2 #F7F7FA</td></tr>
+    <tr><td>brand</td><td>brand #7132F5</td><td>brand-50 #F4EFFF</td></tr>
+    <tr><td>accent</td><td>accent-700 #C4421F</td><td>accent-50 #FDF2EE</td></tr>
+    <tr><td>success</td><td>success-dark #026B3F</td><td>#E0F4EA</td></tr>
+    <tr><td>warning</td><td>warning #C58A12</td><td>#FCF1D9</td></tr>
+    <tr><td>danger</td><td>danger #A82121</td><td>#FBE6E2</td></tr>
+    <tr><td>info</td><td>info #1C7CD9</td><td>#E4F0FB</td></tr>
+  </table>
+
+  <h2>Avatar / Icon / Input</h2>
+  <ul>
+    <li><b>Avatar</b>: 정원형. <code>size</code> 24~60, <code>initials</code> 또는 <code>src</code>, <code>ring</code> 옵션 (보라 1.5px outline)</li>
+    <li><b>Icon</b>: 단일 SVG 정의. 24×24 viewBox, <code>strokeWidth</code> default 1.75. 사용 가능한 name: <code>home, calendar, chat, compass, user, search, bell, cart, heart, chevronRight, chevronLeft, chevronDown, close, plus, check, star, map, clock, location, play, wave, settings, arrowUp, eye</code></li>
+    <li><b>Input</b>: <code>label / placeholder / suffix</code>. focus 시 <code>--sh-focus</code> ring</li>
+  </ul>
+
+  <h2>BottomTab (하단 내비)</h2>
+  <p>5탭 고정 — 홈 · 예약 · 커뮤니티 · 투어 · 마이버클. 높이 72px (+ paddingBottom 14 for safe area). Active 색 <code>--c-brand</code>, inactive <code>--c-text-4</code>. Backdrop-blur 적용.</p>
+
+  <h2>TabHeader (페이지 내 탭)</h2>
+  <p>언더라인 스타일. <b>인디케이터는 ink (#101114), 보라 X.</b> 활성 텍스트 ink, 비활성 text-3.</p>
+
+  <div class="footer"><span>BUCCL · Design Spec</span><span>p.4 · Components</span></div>
+</section>
+
+<!-- =============== PAGE 5: SCREEN MAP =============== -->
+<section class="page">
+  <div class="eyebrow">SCREEN INDEX</div>
+  <h1>화면 매핑 (FE/src)</h1>
+
+  <h2>메인 5탭</h2>
+  <table>
+    <tr><th>디자인</th><th>FE 파일</th><th>주요 변경</th></tr>
+    <tr><td>홈</td><td><code>pages/main/MainPage.jsx</code></td><td>QuickMenu 10개, BrandPicker 신규, 인기 커뮤니티 캐러셀, 푸터</td></tr>
+    <tr><td>예약하기</td><td><code>pages/reservation/Reservation.jsx</code></td><td>수강권 컴팩트 배너, 캘린더 컴팩트, 탭 ink</td></tr>
+    <tr><td>커뮤니티</td><td><code>pages/community/CommunityList.jsx</code></td><td>16px 패딩 통일, 8px gap 분리</td></tr>
+    <tr><td>투어 캘린더</td><td><code>pages/store/tour/TourCalendar.jsx</code></td><td>셀 56, 바 12, gap 2</td></tr>
+    <tr><td>마이버클</td><td><code>pages/mypage/MyBuccl.jsx</code></td><td>토큰만</td></tr>
+  </table>
+
+  <h2>판매 / 상세</h2>
+  <table>
+    <tr><th>디자인</th><th>FE 파일</th></tr>
+    <tr><td>강습권 판매</td><td><code>pages/store/class/Class.jsx</code></td></tr>
+    <tr><td>쇼핑 목록</td><td><code>pages/store/product/Product.jsx</code></td></tr>
+    <tr><td>강습 상세</td><td><code>pages/store/class/ClassDetail.jsx</code></td></tr>
+    <tr><td>투어 상세</td><td><code>pages/store/tour/TourDetail.jsx</code></td></tr>
+    <tr><td>상품 상세</td><td><code>pages/store/product/ProductDetail.jsx</code></td></tr>
+    <tr><td>커뮤니티 글</td><td><code>pages/community/CommunityDetail.jsx</code></td></tr>
+  </table>
+
+  <h2>커머스</h2>
+  <table>
+    <tr><th>디자인</th><th>FE 파일</th></tr>
+    <tr><td>장바구니</td><td><code>pages/cart/Cart.jsx</code></td></tr>
+    <tr><td>주문/결제</td><td><code>pages/payment/PaymentInfo.jsx</code></td></tr>
+    <tr><td>주문 내역 / 상세</td><td><code>pages/orderHistory/{OrderHistory,OrderDetail}.jsx</code></td></tr>
+  </table>
+
+  <h2>계정</h2>
+  <table>
+    <tr><th>디자인</th><th>FE 파일</th></tr>
+    <tr><td>로그인 / 회원가입 / 찾기</td><td><code>pages/login/{Login,Signup,FindIdAndPW}.jsx</code></td></tr>
+    <tr><td>내 수강권</td><td><code>pages/mypage/MyTicket.jsx</code></td></tr>
+    <tr><td>자격증 등록</td><td><code>pages/mypage/VerifyLicense.jsx</code></td></tr>
+    <tr><td>알림 / 설정</td><td><code>pages/{alert/Alert,setting/Setting}.jsx</code></td></tr>
+  </table>
+
+  <h2 style="color:var(--c-brand)">🆕 신규 — Dive Points (커뮤니티 다이빙 포인트)</h2>
+  <p>기존 없는 화면. 신규 라우트 <code>/community/dive-points</code> 권장.</p>
+  <ul>
+    <li><b>피드</b> — 스토리 레일 + 3가지 포스트 패턴 (단일사진 IG / 텍스트 Threads / 그리드)</li>
+    <li><b>포인트 페이지</b> — IG 프로필 스타일 + grid/feed/log/tag 4탭</li>
+    <li><b>다이브 로그 작성</b> — Threads 컴포저 + 수심/시야/수온/생물 입력</li>
+  </ul>
+
+  <h2 style="color:var(--c-brand)">🆕 신규 — 첫 사용자 튜토리얼</h2>
+  <p>로그인 직후 첫 홈 진입 시 1회. <code>localStorage.buccl_tutorial_seen_v1</code> 플래그로 관리. <b>Deep Sea 다크 톤 (시그니처 보라 X)</b>.</p>
+  <ol>
+    <li><b>Welcome</b> — 풀블리드 다크 인트로, 헤드라인 + 시안 점 피처 리스트 + "둘러보기" CTA</li>
+    <li><b>코치마크 1: 강습</b> — 강습 예약 아이콘. ↳ "수강권에서 강습권도 함께 구매할 수 있어요"</li>
+    <li><b>코치마크 2: 연습반</b> — ↳ "내 자격증 메뉴에서 이미 보유한 자격증도 등록"</li>
+    <li><b>코치마크 3: 투어</b></li>
+    <li><b>코치마크 4: 커뮤니티</b> — 다이브 로그 / 후기</li>
+  </ol>
+  <p style="font-size:11.5px;color:var(--c-text-3)">컴포넌트: SpotlightV2 (radial-gradient 컷아웃 + 흰 펄스 링 2겹) / TopProgress / BottomDock / TooltipV2 (다크 #101820 + 시안 칩)</p>
+
+  <div class="footer"><span>BUCCL · Design Spec</span><span>p.5 · Screen Map</span></div>
+</section>
+
+<!-- =============== PAGE 6: CHECKLIST =============== -->
+<section class="page">
+  <div class="eyebrow">DELIVERY</div>
+  <h1>구현 권장 순서 &amp; 체크리스트</h1>
+
+  <h2>Phase 1 — Foundation (1주)</h2>
+  <ol>
+    <li>📦 <b>tokens.css → _tokens.scss 변환</b> · <code>FE/src/assets/scss/_tokens.scss</code> 신규</li>
+    <li>📦 <b>공용 컴포넌트 리뉴얼</b> · Button, Badge, Avatar, Icon, BottomTab, SubHeader, TabHeader</li>
+    <li>🔍 <b>기존 보라/네이비 혼용 색상 검수</b> · 모두 <code>--c-brand</code> 로 통일</li>
+  </ol>
+
+  <h2>Phase 2 — Main flow (2주)</h2>
+  <ol>
+    <li>🏠 <b>홈 (MainPage)</b> · QuickMenu 10개 PNG + BrandPicker + 인기 커뮤니티 + 푸터</li>
+    <li>📅 <b>예약 / 투어 캘린더</b> · 컴팩트 캘린더 + 수강권 컴팩트 배너</li>
+    <li>💬 <b>커뮤니티</b> · 패딩 16px 통일 + 8px gap</li>
+  </ol>
+
+  <h2>Phase 3 — New features (3주)</h2>
+  <ol>
+    <li>🌊 <b>Dive Points</b> · 신규 라우트, 3개 화면 (피드/포인트/컴포저)</li>
+    <li>👋 <b>첫 사용자 튜토리얼</b> · <code>components/onboarding/HomeTutorial.jsx</code> 신규, localStorage 플래그</li>
+  </ol>
+
+  <h2>Phase 4 — 나머지 화면 (2주)</h2>
+  <ol>
+    <li>📋 상세 페이지 (강습/투어/상품/커뮤니티 글)</li>
+    <li>🛒 커머스 플로우 (장바구니 → 결제 → 주문)</li>
+    <li>👤 계정 (로그인/가입/찾기/마이) + 알림/설정</li>
+  </ol>
+
+  <h2>접근성 & 품질 체크</h2>
+  <ul>
+    <li>모든 인터랙티브 요소 hit target 최소 44×44px</li>
+    <li>텍스트 대비 WCAG AA (text-1 / text-2 모두 통과 확인됨)</li>
+    <li>포커스 링 <code>--sh-focus</code> 일관 적용</li>
+    <li>다크모드는 이번 라운드 범위 외 — 단, Welcome 화면은 다크 톤이므로 단독 분리</li>
+  </ul>
+
+  <h2>질문 & 컨택</h2>
+  <p>마이크로 인터랙션 디테일, 빈 상태 일러스트, 실제 사진 자산이 필요한 경우 디자이너에게 직접 문의 부탁드립니다.</p>
+  <p style="margin-top: 24px; font-size: 11px; color: var(--c-text-3);">
+    💡 인터랙티브 리뷰가 필요할 땐 <b>Standalone HTML</b> 을 브라우저에서 열고 <span class="kbd">F11</span> 전체화면 → 마우스 휠로 줌, 드래그로 팬.
+  </p>
+
+  <div class="footer"><span>BUCCL · Design Spec</span><span>p.6 · Delivery</span></div>
+</section>
+
+</body>
+</html>
